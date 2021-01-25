@@ -10,8 +10,6 @@ async function grades(req, res) {
     var coursesJSON = [];
     var gradesJSON = [];
     const account = await sigaa.login(req.body.username, req.body.password);
-    const accountName = await account.getName();
-    const profilePhoto = await account.getProfilePictureURL();
     const activeBonds = await account.getActiveBonds();
     const inactiveBonds = await account.getInactiveBonds();
 
