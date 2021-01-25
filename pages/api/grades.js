@@ -79,14 +79,12 @@ async function grades(req, res) {
               scheudule: course.scheudule,
               grades: gradesJSON
             })
-            console.log(coursesJSON);
           }
           bondsJSON.push({
             program: bond.program,
             registration: bond.registration,
             courses: coursesJSON
           })
-          console.log(bondsJSON);
         }
       }
     
