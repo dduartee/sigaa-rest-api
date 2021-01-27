@@ -17,31 +17,32 @@ async function courses(req, res) {
     allBonds.push(activeBonds, inactiveBonds);
 
     for (const bonds of allBonds) {
-        for (let i = 0; i < bonds.length; i++) {
-          coursesJSON = [];
-          const bond = bonds[i];
-          var courses = await bond.getCourses();
-          for (const course of courses) {
-            coursesJSON.push({
-              id: course.id,
-              title: course.title,
-              code: course.code,
-              period: course.period,
-              scheudule: course.scheudule,
-            })
-          }
-          bondsJSON.push({
-            program: bond.program,
-            registration: bond.registration,
-            courses: coursesJSON
+      for (let i = 0; i < bonds.length; i++) {
+        coursesJSON = [];
+        const bond = bonds[i];
+        var courses = await bond.getCourses();
+        for (const course of courses) {
+          console.log(course.schedule);
+          coursesJSON.push({
+            id: course.id,
+            title: course.title,
+            code: course.code,
+            period: course.period,
+            schedule: course.schedule,
           })
         }
+        bondsJSON.push({
+          program: bond.program,
+          registration: bond.registration,
+          courses: coursesJSON
+        })
       }
-    
-      resultJSON.push({
-        bonds: bondsJSON
-      })
-    res.json(resultJSON)
+    }
+  
+    resultJSON.push({
+      bonds: bondsJSON
+    })
+    res.json(resultJSON);
     await account.logoff();
 }
 
