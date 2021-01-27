@@ -22,7 +22,6 @@ async function courses(req, res) {
         const bond = bonds[i];
         var courses = await bond.getCourses();
         for (const course of courses) {
-          console.log(course.schedule);
           coursesJSON.push({
             id: course.id,
             title: course.title,
