@@ -30,17 +30,13 @@ async function grades(req, res) {
         const gradesGroups = await course.getGrades();
         for (const gradesGroup of gradesGroups) {
           switch (gradesGroup.type) {
-            // O primiro tipo (only-average) é somente o valor final, mesmo assim, pode ser que o valor ainda seja indefinido
             case 'only-average':
               gradesJSON.push({
                 name: gradesGroup.name,
                 value: gradesGroup.value
               })
               break;
-
-              // O segundo (weighted-average) é um grupo com notas ponderadas (tem peso), mas os pesos podem serem todos iguais
             case 'weighted-average':
-              //Para cada nota do grupo
               var personalGrade = [];
               for (const grade of gradesGroup.grades) {
                 personalGrade.push({
@@ -54,10 +50,7 @@ async function grades(req, res) {
                 groupGrade: gradesGroup.value
               })
               break;
-
-              // O terceiro (sum-of-grades) é um grupo de soma de notas, não tem peso, mas cada nota tem um valor máximo
             case 'sum-of-grades':
-              //Para cada nota do grupo
               var personalGrade = [];
               for (const grade of gradesGroup.grades) {
                 personalGrade.push({
