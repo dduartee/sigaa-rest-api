@@ -13,6 +13,7 @@ Forma de requisições em rotas:
 ```
 
 /api/specificCourse/
+/api/specificCourseGrades/
 
 ```
 {
