@@ -113,7 +113,6 @@ async function grades(req, res) {
             grades: gradesJSON
           })
         }
-        console.log(coursesJSON);
       }
       bondsJSON.push({
         program: bond.program,
