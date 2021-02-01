@@ -10,7 +10,8 @@ export default async function bonds(req, res) {
 
         const username = req.body.username;
         const password = req.body.password;
-
+        const args = req.body.args;
+        
         const account = await sigaa.login(username, password);
 
         const activeBonds = await account.getActiveBonds();
@@ -19,13 +20,43 @@ export default async function bonds(req, res) {
         var allBonds = [];
         allBonds.push(activeBonds, inactiveBonds);
 
+        function findBonds(bond, args) {
+            for (const key in bond) {
+                if (Object.hasOwnProperty.call(bond, key)) {
+                    const value = bond[key];
+                    for (const argKEY in args) {
+                        if (Object.hasOwnProperty.call(args, argKEY)) {
+                            const arg = args[argKEY];
+                            if (arg == value) {
+                                return bond;
+                            }
+                        }
+                    }
+                }
+            }
+            return 0;
+        }
+
+        function pushBond(bond) {
+            return {
+                program: bond.program,
+                registration: bond.registration
+            }
+        }
 
         for (const bonds of allBonds) {
             bonds.forEach(bond => {
-                result.push({
-                    program: bond.program,
-                    registration: bond.registration
-                })
+                if (args) {
+                    const valid = findBonds(bond, args)
+                    if (valid) {
+                        result.push(pushBond(bond));
+                    }
+                } else {
+                    result.push({
+                        program: bond.program,
+                        registration: bond.registration
+                    })
+                }
             });
         }
         res.json(result)
