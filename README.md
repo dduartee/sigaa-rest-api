@@ -13,11 +13,7 @@ Forma de requisições em rotas:
     "password": "senha"
 }
 ```
-
-`
-/api/specificCourse/
-/api/specificCourseGrades/
-`
+Com argumentos
 ```
 {
     "username": "usuario",
@@ -33,3 +29,4 @@ Forma de requisições em rotas:
     }
 }
 ```
+
