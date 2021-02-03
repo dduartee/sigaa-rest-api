@@ -12,6 +12,8 @@ async function courses(req, res) {
   const username = req.body.username;
   const password = req.body.password;
   const args = req.body.args;
+  const bondsArgs = req.body.bondargs;
+  const courseArgs = req.body.courseargs;
 
   const account = await sigaa.login(username, password);
   const activeBonds = await account.getActiveBonds();
@@ -20,21 +22,14 @@ async function courses(req, res) {
   var allBonds = [];
   allBonds.push(activeBonds, inactiveBonds);
 
-  function findCourse(course, args) {
-    for (const key in course) {
-      if (Object.hasOwnProperty.call(course, key)) {
-        const value = course[key];
-        for (const argKEY in args) {
-          if (Object.hasOwnProperty.call(args, argKEY)) {
-            const arg = args[argKEY];
-            if (arg == value) {
-              return course;
-            }
-          }
+  function findValue(args, obj) {
+    for (let [key_arg, value_arg] of Object.entries(args)) {
+      for (let [key, value] of Object.entries(obj)) {
+        if (key_arg == key && value_arg == value) {
+          return obj;
         }
       }
     }
-    return 0;
   }
 
   function pushCourses(course) {
@@ -53,7 +48,7 @@ async function courses(req, res) {
       var courses = await bond.getCourses();
       for (const course of courses) {
         if (args) {
-          const valid = findCourse(course, args)
+          const valid = findValue(course, args)
           if (valid) {
             coursesJSON.push(pushCourses(course));
           }

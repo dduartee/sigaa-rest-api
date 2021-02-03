@@ -21,29 +21,22 @@ async function grades(req, res) {
   var allBonds = [];
   allBonds.push(activeBonds, inactiveBonds);
 
-  function findCourse(course, args) {
-    for (const key in course) {
-      if (Object.hasOwnProperty.call(course, key)) {
-        const value = course[key];
-        for (const argKEY in args) {
-          if (Object.hasOwnProperty.call(args, argKEY)) {
-            const arg = args[argKEY];
-            if (arg == value) {
-              return course;
-            }
-          }
+  function findValue(args, obj) {
+    for (let [key_arg, value_arg] of Object.entries(args)) {
+      for (let [key, value] of Object.entries(obj)) {
+        if (key_arg == key && value_arg == value) {
+          return obj;
         }
       }
     }
-    return 0;
   }
 
   function pushGrades(gradesGroups) {
-    var gradesJSON = [];
+    var gradeJSON = [];
     for (const gradesGroup of gradesGroups) {
       switch (gradesGroup.type) {
         case 'only-average':
-          gradesJSON.push({
+          gradeJSON.push({
             name: gradesGroup.name,
             value: gradesGroup.value
           })
@@ -57,7 +50,7 @@ async function grades(req, res) {
               value: grade.value,
             })
           }
-          gradesJSON.push({
+          gradeJSON.push({
             personalGrade: personalGrade,
             groupGrade: gradesGroup.value
           })
@@ -71,14 +64,14 @@ async function grades(req, res) {
               value: grade.value
             })
           }
-          gradesJSON.push({
+          gradeJSON.push({
             personalGrade: personalGrade,
             groupGrade: gradesGroup.value
           })
           break;
       }
     }
-    return gradesJSON;
+    return gradeJSON;
   }
 
   for (const bonds of allBonds) {
@@ -87,29 +80,29 @@ async function grades(req, res) {
       const bond = bonds[i];
       var courses = await bond.getCourses();
       for (const course of courses) {
-        if (args) { //se tiver argumentos
-          const valid = findCourse(course, args) //encontre o curso
-          if (valid) { //se existir o curso
-            const gradesGroups = await course.getGrades();
+        if (args) {
+          const validCourse = findValue(args, course);
+          if (validCourse) {
+            const gradesGroups = await validCourse.getGrades();
             const gradesJSON = pushGrades(gradesGroups);
             coursesJSON.push({
               id: course.id,
               title: course.title,
               code: course.code,
               period: course.period,
-              scheudule: course.scheudule,
+              schedule: course.schedule,
               grades: gradesJSON
             })
           }
-        } else { //se nao
+        } else {
           const gradesGroups = await course.getGrades();
-          const gradesJSON = pushGrades(gradesGroups);
+          gradesJSON.push(pushGrades(gradesGroups))
           coursesJSON.push({
             id: course.id,
             title: course.title,
             code: course.code,
             period: course.period,
-            scheudule: course.scheudule,
+            schedule: course.schedule,
             grades: gradesJSON
           })
         }
@@ -121,7 +114,6 @@ async function grades(req, res) {
       })
     }
   }
-
   resultJSON.push({
     bonds: bondsJSON
   })

@@ -1,2 +1,0 @@
-- name: Codacy Analysis CLI
-  uses: codacy/codacy-analysis-cli-action@1.1.0
