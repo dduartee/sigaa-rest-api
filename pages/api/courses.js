@@ -67,8 +67,11 @@ async function courses(req, res) {
   resultJSON.push({
     bonds: bondsJSON
   })
-  res.json(resultJSON);
-  await account.logoff();
+  if(resultJSON) {
+    res.setHeader("Access-Control-Allow-Origin: *")
+    res.json(resultJSON);
+  }
+    await account.logoff();
 }
 
 export default courses;

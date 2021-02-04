@@ -1,5 +1,4 @@
 async function grades(req, res) {
-
   const Sigaa = require("sigaa-api").Sigaa;
 
   const sigaa = new Sigaa({
@@ -95,16 +94,7 @@ async function grades(req, res) {
             })
           }
         } else {
-          const gradesGroups = await course.getGrades();
-          gradesJSON.push(pushGrades(gradesGroups))
-          coursesJSON.push({
-            id: course.id,
-            title: course.title,
-            code: course.code,
-            period: course.period,
-            schedule: course.schedule,
-            grades: gradesJSON
-          })
+          res.send("Informe os argumentos...");
         }
       }
       bondsJSON.push({
@@ -117,8 +107,10 @@ async function grades(req, res) {
   resultJSON.push({
     bonds: bondsJSON
   })
-
-  res.json(resultJSON);
+  if(resultJSON) {
+    res.setHeader("Access-Control-Allow-Origin: *")
+    res.json(resultJSON);
+  }
 
   await account.logoff();
 }

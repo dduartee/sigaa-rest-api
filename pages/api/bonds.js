@@ -6,12 +6,13 @@ export default async function bonds(req, res) {
         const sigaa = new Sigaa({
             url: "https://sigaa.ifsc.edu.br",
         });
-        var result = [];
+        var resultJSON = [];
+        var bondsJSON = [];
 
         const username = req.body.username;
         const password = req.body.password;
         const args = req.body.args;
-        
+
         const account = await sigaa.login(username, password);
 
         const activeBonds = await account.getActiveBonds();
@@ -42,17 +43,23 @@ export default async function bonds(req, res) {
                 if (args) {
                     const valid = findValue(bond, args)
                     if (valid) {
-                        result.push(pushBond(bond));
+                        bondsJSON.push(pushBond(bond));
                     }
                 } else {
-                    result.push({
+                    bondsJSON.push({
                         program: bond.program,
                         registration: bond.registration
                     })
                 }
             });
         }
-        res.json(result)
+        resultJSON.push({
+            bonds: bondsJSON
+        })
+        if (resultJSON) {
+            res.setHeader("Access-Control-Allow-Origin: *")
+            res.json(resultJSON);
+        }
         await account.logoff();
     }
 }
