@@ -1,4 +1,4 @@
-async function grades(req, res) {
+module.exports = async function (req, res) {
   const Sigaa = require("sigaa-api").Sigaa;
 
   const sigaa = new Sigaa({
@@ -113,5 +113,3 @@ async function grades(req, res) {
 
   await account.logoff();
 }
-
-export default grades;
