@@ -20,21 +20,14 @@ export default async function bonds(req, res) {
         var allBonds = [];
         allBonds.push(activeBonds, inactiveBonds);
 
-        function findBonds(bond, args) {
-            for (const key in bond) {
-                if (Object.hasOwnProperty.call(bond, key)) {
-                    const value = bond[key];
-                    for (const argKEY in args) {
-                        if (Object.hasOwnProperty.call(args, argKEY)) {
-                            const arg = args[argKEY];
-                            if (arg == value) {
-                                return bond;
-                            }
-                        }
+        function findValue(args, obj) {
+            for (let [key_arg, value_arg] of Object.entries(args)) {
+                for (let [key, value] of Object.entries(obj)) {
+                    if (key_arg == key && value_arg == value) {
+                        return obj;
                     }
                 }
             }
-            return 0;
         }
 
         function pushBond(bond) {
@@ -47,7 +40,7 @@ export default async function bonds(req, res) {
         for (const bonds of allBonds) {
             bonds.forEach(bond => {
                 if (args) {
-                    const valid = findBonds(bond, args)
+                    const valid = findValue(bond, args)
                     if (valid) {
                         result.push(pushBond(bond));
                     }

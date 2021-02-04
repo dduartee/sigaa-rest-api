@@ -6,14 +6,17 @@ Forma de requisições em rotas:
 /api/courses/
 /api/bonds/
 /api/grades/
-`
+
+Sem argumentos
 ```
 {
     "username": "usuario",
     "password": "senha"
 }
 ```
-Com argumentos
+/api/members/
+
+Com argumentos (ex: código da matéria, id, matricula que podem ser pegos pela rota /api/courses|bonds sem argumentos)
 ```
 {
     "username": "usuario",
