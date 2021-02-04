@@ -1,7 +1,7 @@
 async function courses(req, res) {
 
   const Sigaa = require("sigaa-api").Sigaa;
-
+  
   const sigaa = new Sigaa({
     url: "https://sigaa.ifsc.edu.br",
   });
@@ -68,7 +68,6 @@ async function courses(req, res) {
     bonds: bondsJSON
   })
   if(resultJSON) {
-    res.setHeader("Access-Control-Allow-Origin: *")
     res.json(resultJSON);
   }
     await account.logoff();

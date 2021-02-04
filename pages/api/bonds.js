@@ -57,7 +57,6 @@ export default async function bonds(req, res) {
             bonds: bondsJSON
         })
         if (resultJSON) {
-            res.setHeader("Access-Control-Allow-Origin: *")
             res.json(resultJSON);
         }
         await account.logoff();

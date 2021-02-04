@@ -108,7 +108,6 @@ async function grades(req, res) {
     bonds: bondsJSON
   })
   if(resultJSON) {
-    res.setHeader("Access-Control-Allow-Origin: *")
     res.json(resultJSON);
   }
 
