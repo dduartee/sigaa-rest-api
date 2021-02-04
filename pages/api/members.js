@@ -1,4 +1,4 @@
-async function courses(req, res) {
+async function members(req, res) {
 
     const Sigaa = require("sigaa-api").Sigaa;
 
@@ -83,4 +83,4 @@ async function courses(req, res) {
     await account.logoff();
 }
 
-export default courses;
+export default members;
