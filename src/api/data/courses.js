@@ -1,12 +1,11 @@
 module.exports = async function (req, res) {
   const Sigaa = require("sigaa-api").Sigaa;
-  
+
   const sigaa = new Sigaa({
     url: "https://sigaa.ifsc.edu.br",
   });
   var resultJSON = [];
   var bondsJSON = [];
-  var coursesJSON = [];
 
   const username = req.body.username;
   const password = req.body.password;
@@ -40,34 +39,39 @@ module.exports = async function (req, res) {
       schedule: course.schedule
     }
   }
+
+
+  function pushBonds(bond) {
+    return {
+      program: bond.program,
+      registration: bond.registration,
+      courses: coursesJSON
+    }
+  }
+
+  function handler(course) {
+    coursesJSON.push(pushCourses(course));
+  }
   for (const bonds of allBonds) {
     for (let i = 0; i < bonds.length; i++) {
       coursesJSON = [];
       const bond = bonds[i];
       var courses = await bond.getCourses();
       for (const course of courses) {
-        if (args) {
-          const valid = findValue(course, args)
-          if (valid) {
-            coursesJSON.push(pushCourses(course));
-          }
-        } else {
-          coursesJSON.push(pushCourses(course));
-        }
+        if (args)
+          if (findValue(course, args)) handler(course);
+          else;
+        else handler(course);
       }
-      bondsJSON.push({
-        program: bond.program,
-        registration: bond.registration,
-        courses: coursesJSON
-      })
+      bondsJSON.push(pushBonds(bond));
     }
   }
 
   resultJSON.push({
     bonds: bondsJSON
   })
-  if(resultJSON) {
+  if (resultJSON) {
     res.json(resultJSON);
   }
-    await account.logoff();
+  await account.logoff();
 }

@@ -36,26 +36,20 @@ module.exports = async function (req, res) {
         }
     }
 
+    function handler(bond) {
+        bondsJSON.push(pushBond(bond));
+    }
     for (const bonds of allBonds) {
         bonds.forEach(bond => {
-            if (args) {
-                const valid = findValue(bond, args)
-                if (valid) {
-                    bondsJSON.push(pushBond(bond));
-                }
-            } else {
-                bondsJSON.push({
-                    program: bond.program,
-                    registration: bond.registration
-                })
-            }
+            if (args)
+                if (findValue(bond, args)) handler(bond);
+                else;
+            else handler(bond);
         });
     }
     resultJSON.push({
         bonds: bondsJSON
     })
-    if (resultJSON) {
-        res.json(resultJSON);
-    }
+    res.json(resultJSON);
     await account.logoff();
 }
