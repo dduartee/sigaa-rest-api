@@ -15,6 +15,8 @@ Sem argumentos
 }
 ```
 /api/members/
+/api/news/
+/api/homeworks/
 
 Com argumentos (ex: código da matéria, id, matricula que podem ser pegos pela rota /api/courses|bonds sem argumentos)
 ```
@@ -29,6 +31,9 @@ Com argumentos (ex: código da matéria, id, matricula que podem ser pegos pela 
         //Podendo ter mais de um valor ex:
         "id": "164215",
         "title": "ARTES II"
+
+        //Podendo ser filtrados pelos vinculos ex:
+        "registration: "{registration do vinculo}"
     }
 }
 ```
