@@ -4,15 +4,12 @@ module.exports = async function (req, res) {
     const sigaa = new Sigaa({
         url: "https://sigaa.ifsc.edu.br",
     });
-    var resultJSON = [];
     var bondsJSON = [];
     var coursesJSON = [];
 
     const username = req.body.username;
     const password = req.body.password;
-    const args = req.body.args;
-    const bondsArgs = req.body.bondargs;
-    const courseArgs = req.body.courseargs;
+    const args = req.body.args || []; // caso nao seja enviado args ele sera vazio
 
     const account = await sigaa.login(username, password);
     const activeBonds = await account.getActiveBonds();
@@ -56,46 +53,52 @@ module.exports = async function (req, res) {
         }
         return homeworks;
     }
-    async function handler(course) {
-        const homeworkList = await course.getHomeworks();
-        const homeworksJSON = await pushHomeworks(homeworkList);
-        coursesJSON.push({
+
+    function pushCourses(course, homeworksJSON) {
+        return {
             id: course.id,
             title: course.title,
             code: course.code,
             period: course.period,
             schedule: course.schedule,
             homeworks: homeworksJSON
-        })
+        }
+
     }
+    async function homeworkHandler(course) {
+        const homeworkList = await course.getHomeworks();
+        const homeworksJSON = await pushHomeworks(homeworkList);
+        coursesJSON.push(pushCourses(course, homeworksJSON))
+    }
+
     function pushBonds(bond) {
         return {
             program: bond.program,
             registration: bond.registration,
             courses: coursesJSON
         }
-        
     }
     for (const bonds of allBonds) {
         for (let i = 0; i < bonds.length; i++) {
             coursesJSON = [];
             const bond = bonds[i];
-            var courses = await bond.getCourses();
+            if (req.body.args && !findValue(args, bond)) break; // se tiver argumentos e não for valido
+            else if (!req.body.args) { //verifica se existem argumentos
+                res.json({
+                    error: true,
+                    msg: "Rota requer argumentos"
+                })
+                return;
+            }
+            const courses = await bond.getCourses();
             for (const course of courses) {
-                if (args)
-                    if (findValue(course, args)) await handler(course); //se tiver args e for valido
-                    else;
-                else await handler(course);
+                if (findValue(args, course)) await homeworkHandler(course); // se nao for valido
             }
             bondsJSON.push(pushBonds(bond));
         }
     }
-
-    resultJSON.push({
+    res.json({
         bonds: bondsJSON
-    })
-    if (resultJSON) {
-        res.json(resultJSON);
-    }
+    });
     await account.logoff();
 }

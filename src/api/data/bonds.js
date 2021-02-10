@@ -4,7 +4,6 @@ module.exports = async function (req, res) {
     const sigaa = new Sigaa({
         url: "https://sigaa.ifsc.edu.br",
     });
-    var resultJSON = [];
     var bondsJSON = [];
 
     const username = req.body.username;
@@ -36,20 +35,18 @@ module.exports = async function (req, res) {
         }
     }
 
-    function handler(bond) {
+    function bondHandler(bond) {
         bondsJSON.push(pushBond(bond));
     }
     for (const bonds of allBonds) {
-        bonds.forEach(bond => {
-            if (args)
-                if (findValue(bond, args)) handler(bond);
-                else;
-            else handler(bond);
-        });
+        for (let i = 0; i < bonds.length; i++) {
+            const bond = bonds[i];
+            if (args && findValue(args, bond)) bondHandler(bond);
+            else if (!args) bondHandler(bond);
+        }
     }
-    resultJSON.push({
+    res.json({
         bonds: bondsJSON
-    })
-    res.json(resultJSON);
+    });
     await account.logoff();
 }

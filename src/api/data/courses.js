@@ -4,14 +4,11 @@ module.exports = async function (req, res) {
   const sigaa = new Sigaa({
     url: "https://sigaa.ifsc.edu.br",
   });
-  var resultJSON = [];
   var bondsJSON = [];
 
   const username = req.body.username;
   const password = req.body.password;
   const args = req.body.args;
-  const bondsArgs = req.body.bondargs;
-  const courseArgs = req.body.courseargs;
 
   const account = await sigaa.login(username, password);
   const activeBonds = await account.getActiveBonds();
@@ -49,29 +46,24 @@ module.exports = async function (req, res) {
     }
   }
 
-  function handler(course) {
+  function courseHandler(course) {
     coursesJSON.push(pushCourses(course));
   }
   for (const bonds of allBonds) {
     for (let i = 0; i < bonds.length; i++) {
       coursesJSON = [];
       const bond = bonds[i];
-      var courses = await bond.getCourses();
+      if (args && !findValue(args, bond)) break; // se nao for valido
+      const courses = await bond.getCourses();
       for (const course of courses) {
-        if (args)
-          if (findValue(course, args)) handler(course);
-          else;
-        else handler(course);
+        if (args && findValue(course, args)) courseHandler(course);
+        else if (!args) courseHandler(course);
       }
       bondsJSON.push(pushBonds(bond));
     }
   }
-
-  resultJSON.push({
+  res.json({
     bonds: bondsJSON
-  })
-  if (resultJSON) {
-    res.json(resultJSON);
-  }
+  });
   await account.logoff();
 }

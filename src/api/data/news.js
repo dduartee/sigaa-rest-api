@@ -1,20 +1,16 @@
 module.exports = async function (req, res) {
-
     const Sigaa = require("sigaa-api").Sigaa;
 
     const sigaa = new Sigaa({
         url: "https://sigaa.ifsc.edu.br",
     });
-    var resultJSON = [];
     var bondsJSON = [];
     var coursesJSON = [];
-    var membersJSON = [];
 
     const username = req.body.username;
     const password = req.body.password;
-    const args = req.body.args;
-    const bondsArgs = req.body.bondargs;
-    const courseArgs = req.body.courseargs;
+    const args = req.body.args || []; // caso nao seja enviado args ele sera vazio
+
     const account = await sigaa.login(username, password);
     const activeBonds = await account.getActiveBonds();
     const inactiveBonds = await account.getInactiveBonds();
@@ -32,30 +28,43 @@ module.exports = async function (req, res) {
         }
     }
 
-    function pushCourses(course, membersJSON) {
+    function pushCourses(course, newsJSON) {
         return {
             id: course.id,
             title: course.title,
             code: course.code,
             period: course.period,
             schedule: course.schedule,
-            members: membersJSON
+            news: newsJSON
         }
     }
 
-    function pushMembers(members) {
+    async function pushNews(newsList) {
+        var newsJSON = [];
+        for (const news of newsList) {
+            newsJSON.push({
+                id: news.id,
+                title: news.title,
+                description: await news.getContent(),
+                date: (await news.getDate()).toString()
+            })
+        }
+        return newsJSON;
+    }
+
+    async function newsHandler(course) {
+        const newsList = await course.getNews();
+        const newsJSON = await pushNews(newsList);
+        coursesJSON.push(pushCourses(course, newsJSON))
+    }
+
+    function pushBonds(bond) {
         return {
-            students: members.students,
-            teachers: members.teachers
+            program: bond.program,
+            registration: bond.registration,
+            courses: coursesJSON
         }
     }
-
-    async function memberHandler(course) {
-        const members = await course.getMembers();
-        membersJSON.push(pushMembers(members));
-        coursesJSON.push(pushCourses(course, membersJSON));
-    }
-
     for (const bonds of allBonds) {
         for (let i = 0; i < bonds.length; i++) {
             coursesJSON = [];
@@ -68,24 +77,15 @@ module.exports = async function (req, res) {
                 })
                 return;
             }
-            var courses = await bond.getCourses();
+            const courses = await bond.getCourses();
             for (const course of courses) {
-                membersJSON = [];
-                if (findValue(course, args)) await memberHandler(course);
+                if (findValue(args, course)) await newsHandler(course); // se nao for valido
             }
-            bondsJSON.push({
-                program: bond.program,
-                registration: bond.registration,
-                courses: coursesJSON
-            })
+            bondsJSON.push(pushBonds(bond));
         }
     }
-
-    resultJSON.push({
+    res.json({
         bonds: bondsJSON
-    })
-    if (resultJSON) {
-        res.json(resultJSON);
-    }
+    });
     await account.logoff();
 }

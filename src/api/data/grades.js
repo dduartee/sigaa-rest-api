@@ -4,14 +4,12 @@ module.exports = async function (req, res) {
   const sigaa = new Sigaa({
     url: "https://sigaa.ifsc.edu.br",
   });
-  var resultJSON = [];
   var bondsJSON = [];
   var coursesJSON = [];
-  var gradesJSON = [];
 
   const username = req.body.username;
   const password = req.body.password;
-  const args = req.body.args;
+  const args = req.body.args || [];
 
   const account = await sigaa.login(username, password);
   const activeBonds = await account.getActiveBonds();
@@ -73,43 +71,50 @@ module.exports = async function (req, res) {
     return gradeJSON;
   }
 
+  function pushCourses(course, gradesJSON) {
+    return {
+      id: course.id,
+      title: course.title,
+      code: course.code,
+      period: course.period,
+      schedule: course.schedule,
+      grades: gradesJSON
+    }
+  }
+  async function gradesHandler(course) {
+    const gradesGroups = await course.getGrades();
+    const gradesJSON = pushGrades(gradesGroups);
+    coursesJSON.push(pushCourses(course, gradesJSON))
+  }
+
+  function pushBonds(bond) {
+    return {
+      program: bond.program,
+      registration: bond.registration,
+      courses: coursesJSON
+    }
+  }
   for (const bonds of allBonds) {
     for (let i = 0; i < bonds.length; i++) {
       coursesJSON = [];
       const bond = bonds[i];
-      var courses = await bond.getCourses();
-      for (const course of courses) {
-        if (args) {
-          const validCourse = findValue(args, course);
-          if (validCourse) {
-            const gradesGroups = await validCourse.getGrades();
-            const gradesJSON = pushGrades(gradesGroups);
-            coursesJSON.push({
-              id: course.id,
-              title: course.title,
-              code: course.code,
-              period: course.period,
-              schedule: course.schedule,
-              grades: gradesJSON
-            })
-          }
-        } else {
-          res.send("Informe os argumentos...");
-        }
+      if (req.body.args && !findValue(args, bond)) break; // se nao for valido
+      else if (!req.body.args) {
+        res.json({
+          error: true,
+          msg: "Rota requer argumentos"
+        })
+        return;
       }
-      bondsJSON.push({
-        program: bond.program,
-        registration: bond.registration,
-        courses: coursesJSON
-      })
+      const courses = await bond.getCourses();
+      for (const course of courses) {
+        if (findValue(args, course)) await gradesHandler(course);
+      }
+      bondsJSON.push(pushBonds(bond))
     }
   }
-  resultJSON.push({
+  res.json({
     bonds: bondsJSON
-  })
-  if(resultJSON) {
-    res.json(resultJSON);
-  }
-
+  });
   await account.logoff();
 }
