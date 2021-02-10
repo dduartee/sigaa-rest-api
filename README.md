@@ -1,5 +1,6 @@
 # sigaa-rest-api
-### PROJETO NÃO ESTA FUNCIONAL NA VERCEL POR ENQUANTO
+### Projeto esta em produção na HEROKU
+https://sigaa-rest-api.herokuapp.com/
 
 Forma de requisições em rotas:
 `
