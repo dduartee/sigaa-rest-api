@@ -5,10 +5,13 @@ const cors = require('cors');
 const app = express();
 const api = require('./src/api/routes');
 
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+
 app.use(cors())
 
 app.use('/api', api);
+
 app.get('/', (req, res) => {
     res.send("Sigaa-rest-api")
 })
