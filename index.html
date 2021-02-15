@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sigaa-rest-api</title>
+</head>
+
+<body>
+    <input type="text" name="username" id="username" placeholder="Usuario: " value />
+    <input type="password" name="password" id="password" placeholder="Senha: " value />
+    <select name="endpoint" id="endpoint" value>
+      <option></option>
+      <option>courses</option>
+      <option>bonds</option>
+      <option>members</option>
+      <option>grades</option>
+    </select>
+    <select name="argKEY" id="argkey" value>
+      <option></option>
+      <option>code</option>
+      <option>id</option>
+      <option>period</option>
+      <option>registration</option>
+    </select>
+    <input type="text" name="argValue" id="argvalue" placeholder="Valor: " value="" />  
+    <input type="button" onclick="sendApi()">
+  <br />
+  <textarea name="response" id="response"></textarea>
+  <script>
+    function sendApi() {
+      let username = document.getElementById("username").value;
+      let password = document.getElementById("password").value;
+      let endpoint = document.getElementById("endpoint").value;
+      var url = "https://sigaa-rest-api.herokuapp.com/api/" + endpoint;
+      var data = new FormData();
+      data.append("username", username);
+      data.append("password", password);
+      var myHeaders = new Headers();
+      var options = {
+        method: "POST",
+        body: data,
+        headers: myHeaders,
+        mode: "cors",
+      };
+
+      console.log(
+        fetch(url, options).then(function (response) {
+          document.getElementById("response").value = response;
+          console.log(response);
+        })
+      );
+      return 0;
+    }
+  </script>
+</body>
+
+</html>
