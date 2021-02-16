@@ -21,7 +21,7 @@ Sem argumentos
 
 Com argumentos, informando pela url (informe argumentos sobre os courses[materias] e sobre os bonds[vinculos], como por exemplo: id e codigo da materia, registration[matricula] do vinculo)
 ```
-URL: https://sigaa-rest-api.herokuapp.com/api/news?id=164215&registration={registration do vinculo}
+URL: https://sigaa-rest-api.herokuapp.com/api/news?id={id da materia}&registration={registration do vinculo}
 
 body {
     "username": "usuario",
