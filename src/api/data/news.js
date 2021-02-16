@@ -62,7 +62,7 @@ module.exports = async function (req, res) {
                 id: news.id,
                 title: news.title,
                 description: await news.getContent(),
-                date: (await news.getDate().toString())
+                date: (await news.getDate()).toString()
             })
         }
         return newsJSON;
