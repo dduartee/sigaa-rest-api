@@ -9,7 +9,7 @@ module.exports = async function (req, res) {
 
     const username = req.body.username;
     const password = req.body.password;
-    const args = req.body.args || []; // caso nao seja enviado args ele sera vazio
+    const args = req.query;
 
     const account = await sigaa.login(username, password);
     const activeBonds = await account.getActiveBonds();
@@ -18,6 +18,23 @@ module.exports = async function (req, res) {
     var allBonds = [];
     allBonds.push(activeBonds, inactiveBonds);
 
+    function isEmpty (val) {
+        let typeOfVal = typeof val;
+        switch(typeOfVal){
+            case 'object':
+                return (val.length == 0) || !Object.keys(val).length;
+                break;
+            case 'string':
+                let str = val.trim();
+                return str == '' || str == undefined;
+                break;
+            case 'number':
+                return val == '';
+                break;
+            default:
+                return val == '' || val == undefined;
+        }
+    };
     function findValue(args, obj) {
         for (let [key_arg, value_arg] of Object.entries(args)) {
             for (let [key, value] of Object.entries(obj)) {
@@ -82,8 +99,8 @@ module.exports = async function (req, res) {
         for (let i = 0; i < bonds.length; i++) {
             coursesJSON = [];
             const bond = bonds[i];
-            if (req.body.args && !findValue(args, bond)) break; // se tiver argumentos e não for valido
-            else if (!req.body.args) { //verifica se existem argumentos
+            if (!isEmpty(args) && !findValue(args, bond)) break; // se tiver argumentos e não for valido
+            else if (isEmpty(args)) { //verifica se existem argumentos
                 res.json({
                     error: true,
                     msg: "Rota requer argumentos"

@@ -8,7 +8,7 @@ module.exports = async function (req, res) {
 
     const username = req.body.username;
     const password = req.body.password;
-    const args = req.body.args;
+    const args = req.query;
 
     const account = await sigaa.login(username, password);
 
@@ -17,6 +17,24 @@ module.exports = async function (req, res) {
 
     var allBonds = [];
     allBonds.push(activeBonds, inactiveBonds);
+
+    function isEmpty(val) {
+        let typeOfVal = typeof val;
+        switch (typeOfVal) {
+            case 'object':
+                return (val.length == 0) || !Object.keys(val).length;
+                break;
+            case 'string':
+                let str = val.trim();
+                return str == '' || str == undefined;
+                break;
+            case 'number':
+                return val == '';
+                break;
+            default:
+                return val == '' || val == undefined;
+        }
+    };
 
     function findValue(args, obj) {
         for (let [key_arg, value_arg] of Object.entries(args)) {
@@ -41,8 +59,8 @@ module.exports = async function (req, res) {
     for (const bonds of allBonds) {
         for (let i = 0; i < bonds.length; i++) {
             const bond = bonds[i];
-            if (args && findValue(args, bond)) bondHandler(bond);
-            else if (!args) bondHandler(bond);
+            if (!isEmpty(args) && findValue(args, bond)) bondHandler(bond); //se tiver argumentos e for valido
+            else if (isEmpty(args)) bondHandler(bond); // se não tiver argumentos
         }
     }
     res.json({
