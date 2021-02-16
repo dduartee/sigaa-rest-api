@@ -19,23 +19,13 @@ Sem argumentos
 /api/news/
 /api/homeworks/
 
-Com argumentos (ex: código da matéria, id, matricula que podem ser pegos pela rota /api/courses|bonds sem argumentos)
+Com argumentos, informando pela url (informe argumentos sobre os courses[materias] e sobre os bonds[vinculos], como por exemplo: id e codigo da materia, registration[matricula] do vinculo)
 ```
-{
+URL: https://sigaa-rest-api.herokuapp.com/api/news?id=164215&registration={registration do vinculo}
+
+body {
     "username": "usuario",
-    "password": "senha",
-    "args" : {
-
-        //Valores especificos de cursos ex:
-        "id": "164215"
-
-        //Podendo ter mais de um valor ex:
-        "id": "164215",
-        "title": "ARTES II"
-
-        //Podendo ser filtrados pelos vinculos ex:
-        "registration: "{registration do vinculo}"
-    }
+    "password": "senha"
 }
 ```
 
