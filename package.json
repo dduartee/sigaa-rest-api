@@ -19,7 +19,6 @@
   },
   "homepage": "https://github.com/dduartee/sigaa-rest-api#readme",
   "dependencies": {
-    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "sigaa-api": "^1.0.18"
