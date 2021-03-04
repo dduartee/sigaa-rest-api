@@ -3,7 +3,7 @@ import cors from 'cors';
 
 const app = express();
 
-import api from './src/api/routes';
+import api from './api/routes';
 
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
