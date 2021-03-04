@@ -1,9 +1,9 @@
-const express = require('express');
-const cors = require('cors');
+import express from 'express';
+import cors from 'cors';
 
 const app = express();
 
-const api = require('./src/api/routes');
+import api from './src/api/routes';
 
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());

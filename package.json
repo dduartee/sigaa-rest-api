@@ -2,17 +2,13 @@
   "name": "sigaa-rest-api",
   "version": "2.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "tsc && node dist/index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dduartee/sigaa-rest-api.git"
-  },
+  "repository": "git+https://github.com/dduartee/sigaa-rest-api.git",
   "keywords": [],
-  "author": "",
+  "author": "dduartee <gabrielkduarte234@gmail.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/dduartee/sigaa-rest-api/issues"
@@ -22,5 +18,11 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "sigaa-api": "^1.0.18"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.10",
+    "@types/express": "^4.17.11",
+    "tslint": "^6.1.3",
+    "typescript": "^4.2.2"
   }
 }
