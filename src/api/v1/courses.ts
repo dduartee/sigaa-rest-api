@@ -1,4 +1,4 @@
-import { Sigaa } from "sigaa-api";
+import { Sigaa, StudentBond, CourseStudent } from 'sigaa-api';
 import { Request, Response } from "express";
 import isEmpty from "../../util/isEmpty";
 import findValue from "../../util/findValue";
@@ -7,7 +7,7 @@ const sigaa = new Sigaa({
 });
 export default async function (req:Request, res:Response) {
 
-  var bondsJSON = [];
+  var bondsJSON:any = [];
 
   const username = req.body.username;
   const password = req.body.password;
@@ -20,7 +20,7 @@ export default async function (req:Request, res:Response) {
   var allBonds = [];
   allBonds.push(activeBonds, inactiveBonds);
 
-  function pushCourses(course:any) {
+  function pushCourses(course:CourseStudent) {
     return {
       id: course.id,
       title: course.title,
@@ -31,7 +31,7 @@ export default async function (req:Request, res:Response) {
   }
 
 
-  function pushBonds(bond:any) {
+  function pushBonds(bond:StudentBond) {
     return {
       program: bond.program,
       registration: bond.registration,
@@ -39,13 +39,13 @@ export default async function (req:Request, res:Response) {
     }
   }
 
-  function courseHandler(course:any) {
+  function courseHandler(course:CourseStudent) {
     coursesJSON.push(pushCourses(course));
   }
   for (const bonds of allBonds) {
     for (let i = 0; i < bonds.length; i++) {
       var coursesJSON:any = [];
-      const bond:any = bonds[i];
+      const bond:StudentBond = bonds[i];
       if (!isEmpty(args) && !findValue(args, bond)) break; // se tiver argumentos e não for valido
       const courses = await bond.getCourses();
       for (const course of courses) {

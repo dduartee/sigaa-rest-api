@@ -1,4 +1,4 @@
-import { Sigaa, SigaaStudentBond, CourseStudent, StudentBond, BondType } from 'sigaa-api';
+import { Sigaa, CourseStudent, GradeGroup, StudentBond } from 'sigaa-api';
 import { Request, Response } from "express";
 import isEmpty from "../../util/isEmpty";
 import findValue from "../../util/findValue";
@@ -20,7 +20,7 @@ export default async function (req: Request, res: Response) {
   var allBonds = [];
   allBonds.push(activeBonds, inactiveBonds);
   
-  function pushGrades(gradesGroups: any) {
+  function pushGrades(gradesGroups: GradeGroup[]) {
     var gradeJSON = [];
     for (const gradesGroup of gradesGroups) {
       switch (gradesGroup.type) {
@@ -73,13 +73,13 @@ export default async function (req: Request, res: Response) {
       grades: gradesJSON
     }
   }
-  async function gradesHandler(course: any) {
+  async function gradesHandler(course: CourseStudent) {
     const gradesGroups = await course.getGrades();
     const gradesJSON = pushGrades(gradesGroups);
     coursesJSON.push(pushCourses(course, gradesJSON))
   }
 
-  function pushBonds(bond: SigaaStudentBond) {
+  function pushBonds(bond: StudentBond, coursesJSON) {
     return {
       program: bond.program,
       registration: bond.registration,
@@ -89,7 +89,7 @@ export default async function (req: Request, res: Response) {
   for (const bonds of allBonds) {
     for (let i = 0; i < bonds.length; i++) {
       coursesJSON = [];
-      const bond:any = bonds[i];
+      const bond:StudentBond = bonds[i];
       if (!isEmpty(args) && !findValue(args, bond)) break; // se tiver argumentos e não for valido
       else if (isEmpty(args)) { //verifica se existem argumentos
         res.json({
@@ -98,11 +98,11 @@ export default async function (req: Request, res: Response) {
         })
         return;
       }
-      const courses = await bond.getCourses();
+      const courses:CourseStudent[] = await bond.getCourses();
       for (const course of courses) {
         if (findValue(args, course)) await gradesHandler(course);
       }
-      bondsJSON.push(pushBonds(bond))
+      bondsJSON.push(pushBonds(bond, coursesJSON))
     }
   }
   await account.logoff();

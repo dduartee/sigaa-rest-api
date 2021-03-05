@@ -1,4 +1,4 @@
-import { Sigaa, CourseStudent, MemberList } from 'sigaa-api';
+import { Sigaa, CourseStudent, MemberList, StudentBond } from 'sigaa-api';
 import { Request, Response } from "express";
 import isEmpty from "../../util/isEmpty";
 import findValue from "../../util/findValue";
@@ -46,11 +46,17 @@ export default async function (req: Request, res:Response) {
         membersJSON.push(pushMembers(members));
         coursesJSON.push(pushCourses(course, membersJSON));
     }
-
+    function pushBonds(bond:StudentBond, coursesJSON:any) {
+        bondsJSON.push({
+            program: bond.program,
+            registration: bond.registration,
+            courses: coursesJSON
+        })
+    }
     for (const bonds of allBonds) {
         for (let i = 0; i < bonds.length; i++) {
             coursesJSON = [];
-            const bond:any = bonds[i];
+            const bond:StudentBond = bonds[i];
             if (!isEmpty(args) && !findValue(args, bond)) break; // se tiver argumentos e não for valido
             else if (isEmpty(args)) { //verifica se existem argumentos
                 res.json({
@@ -64,11 +70,6 @@ export default async function (req: Request, res:Response) {
                 membersJSON = [];
                 if (findValue(course, args)) await memberHandler(course);
             }
-            bondsJSON.push({
-                program: bond.program,
-                registration: bond.registration,
-                courses: coursesJSON
-            })
         }
     }
 

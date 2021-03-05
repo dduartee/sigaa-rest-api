@@ -1,4 +1,4 @@
-import { Sigaa, CourseStudent, MemberList, SigaaNews, News } from 'sigaa-api';
+import { Sigaa, CourseStudent, MemberList, SigaaNews, News, StudentBond } from 'sigaa-api';
 import { Request, Response } from "express";
 import isEmpty from "../../util/isEmpty";
 import findValue from "../../util/findValue";
@@ -51,7 +51,7 @@ export default async function (req: Request, res: Response) {
         coursesJSON.push(pushCourses(course, newsJSON))
     }
 
-    function pushBonds(bond:any) {
+    function pushBonds(bond:StudentBond) {
         return {
             program: bond.program,
             registration: bond.registration,
@@ -61,7 +61,7 @@ export default async function (req: Request, res: Response) {
     for (const bonds of allBonds) {
         for (let i = 0; i < bonds.length; i++) {
             coursesJSON = [];
-            const bond:any = bonds[i];
+            const bond:StudentBond = bonds[i];
             if (!isEmpty(args) && !findValue(args, bond)) break; // se tiver argumentos e não for valido
             else if (isEmpty(args)) { //verifica se existem argumentos
                 res.json({

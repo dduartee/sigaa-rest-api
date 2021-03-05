@@ -1,4 +1,4 @@
-export default function (val:any) {
+export default function (val) {
     let typeOfVal = typeof val;
     switch (typeOfVal) {
         case 'object':

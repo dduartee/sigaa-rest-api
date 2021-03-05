@@ -1,4 +1,4 @@
-import { Sigaa, SigaaStudentBond, CourseStudent, StudentBond, BondType, Homework, SigaaHomework } from 'sigaa-api';
+import { Sigaa, CourseStudent, StudentBond, SigaaHomework, Homework } from 'sigaa-api';
 import { Request, Response } from "express";
 import isEmpty from "../../util/isEmpty";
 import findValue from "../../util/findValue";
@@ -21,7 +21,7 @@ export default async function (req:Request, res:Response) {
     var allBonds = [];
     allBonds.push(activeBonds, inactiveBonds);
 
-    async function pushHomeworks(homeworkList:any) {
+    async function pushHomeworks(homeworkList:SigaaHomework[]) {
         var homeworks = [];
         for (const homework of homeworkList) {
             var description = await homework.getDescription();
@@ -40,7 +40,7 @@ export default async function (req:Request, res:Response) {
         return homeworks;
     }
 
-    function pushCourses(course: CourseStudent, homeworksJSON:object) {
+    function pushCourses(course: CourseStudent, homeworksJSON:any) {
         return {
             id: course.id,
             title: course.title,
@@ -52,12 +52,12 @@ export default async function (req:Request, res:Response) {
 
     }
     async function homeworkHandler(course: CourseStudent) {
-        const homeworkList:any = await course.getHomeworks();
+        const homeworkList:any[] = await course.getHomeworks();
         const homeworksJSON = await pushHomeworks(homeworkList);
         coursesJSON.push(pushCourses(course, homeworksJSON))
     }
 
-    function pushBonds(bond:any) {
+    function pushBonds(bond:StudentBond) {
         return {
             program: bond.program,
             registration: bond.registration,
@@ -67,7 +67,7 @@ export default async function (req:Request, res:Response) {
     for (const bonds of allBonds) {
         for (let i = 0; i < bonds.length; i++) {
             coursesJSON = [];
-            const bond:any = bonds[i];
+            const bond:StudentBond = bonds[i];
             if (!isEmpty(args) && !findValue(args, bond)) break; // se tiver argumentos e não for valido
             else if (isEmpty(args)) { //verifica se existem argumentos
                 res.json({
