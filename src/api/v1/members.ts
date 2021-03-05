@@ -70,6 +70,7 @@ export default async function (req: Request, res:Response) {
                 membersJSON = [];
                 if (findValue(course, args)) await memberHandler(course);
             }
+            pushBonds(bond, coursesJSON)
         }
     }
 

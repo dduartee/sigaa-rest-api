@@ -15,10 +15,17 @@ export default async function (req: Request, res: Response) {
   const args = req.query;
 
   const account = await sigaa.login(username, password);
-  const activeBonds = await account.getActiveBonds();
-  const inactiveBonds = await account.getInactiveBonds();
-  var allBonds = [];
-  allBonds.push(activeBonds, inactiveBonds);
+  try {
+    const activeBonds = await account.getActiveBonds();
+    const inactiveBonds = await account.getInactiveBonds();
+    var allBonds = [];
+    allBonds.push(activeBonds, inactiveBonds);
+    if(isEmpty(allBonds)) {
+      throw new Error("Não foi possivel receber os vinculos")
+    }    
+  } catch (error) {
+    return res.json({error: true, message: error.message})
+  }
   
   function pushGrades(gradesGroups: GradeGroup[]) {
     var gradeJSON = [];
