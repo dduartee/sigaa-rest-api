@@ -47,7 +47,7 @@ export default async function (req: Request, res:Response) {
         coursesJSON.push(pushCourses(course, membersJSON));
     }
     function pushBonds(bond:StudentBond, coursesJSON:any) {
-        bondsJSON.push({
+        return({
             program: bond.program,
             registration: bond.registration,
             courses: coursesJSON
@@ -57,20 +57,19 @@ export default async function (req: Request, res:Response) {
         for (let i = 0; i < bonds.length; i++) {
             coursesJSON = [];
             const bond:StudentBond = bonds[i];
-            if (!isEmpty(args) && !findValue(args, bond)) break; // se tiver argumentos e não for valido
-            else if (isEmpty(args)) { //verifica se existem argumentos
-                res.json({
-                    error: true,
-                    msg: "Rota requer argumentos"
-                })
-                return;
-            }
             var courses = await bond.getCourses();
             for (const course of courses) {
                 membersJSON = [];
                 if (findValue(course, args)) await memberHandler(course);
+                else if (isEmpty(args)) { //verifica se existem argumentos
+                    res.json({
+                        error: true,
+                        msg: "Rota requer argumentos"
+                    })
+                    return;
+                }
             }
-            pushBonds(bond, coursesJSON)
+            bondsJSON.push(pushBonds(bond, coursesJSON));
         }
     }
 

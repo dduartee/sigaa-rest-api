@@ -17,6 +17,7 @@ export default async function (req:Request, res:Response) {
   try {
     const activeBonds = await account.getActiveBonds();
     const inactiveBonds = await account.getInactiveBonds();
+    
     var allBonds = [];
     allBonds.push(activeBonds, inactiveBonds);
     if(isEmpty(allBonds)) {
@@ -49,11 +50,11 @@ export default async function (req:Request, res:Response) {
   function courseHandler(course:CourseStudent) {
     coursesJSON.push(pushCourses(course));
   }
+  
   for (const bonds of allBonds) {
     for (let i = 0; i < bonds.length; i++) {
       var coursesJSON:any = [];
       const bond:StudentBond = bonds[i];
-      if (!isEmpty(args) && !findValue(args, bond)) break; // se tiver argumentos e não for valido
       const courses = await bond.getCourses();
       for (const course of courses) {
         if (!isEmpty(args) && findValue(course, args)) courseHandler(course); // se tiver argumentos e for valido
