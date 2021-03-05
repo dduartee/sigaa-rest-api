@@ -53,7 +53,6 @@ export default async function (req:Request, res:Response) {
     for (let i = 0; i < bonds.length; i++) {
       var coursesJSON:any = [];
       const bond:StudentBond = bonds[i];
-      if (!isEmpty(args) && !findValue(args, bond)) break; // se tiver argumentos e não for valido
       const courses = await bond.getCourses();
       for (const course of courses) {
         if (!isEmpty(args) && findValue(course, args)) courseHandler(course); // se tiver argumentos e for valido
