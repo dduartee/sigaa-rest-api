@@ -1,52 +1,33 @@
-module.exports = async function (req, res) {
-  const Sigaa = require("sigaa-api").Sigaa;
+import { Sigaa, CourseStudent, GradeGroup, StudentBond } from 'sigaa-api';
+import { Request, Response } from "express";
+import isEmpty from "../../util/isEmpty";
+import findValue from "../../util/findValue";
 
-  const sigaa = new Sigaa({
-    url: "https://sigaa.ifsc.edu.br",
-  });
-  var bondsJSON = [];
-  var coursesJSON = [];
+const sigaa = new Sigaa({
+  url: "https://sigaa.ifsc.edu.br",
+});
+export default async function (req: Request, res: Response) {
+  var bondsJSON:any = [];
+  var coursesJSON:any = [];
 
   const username = req.body.username;
   const password = req.body.password;
   const args = req.query;
 
   const account = await sigaa.login(username, password);
-  const activeBonds = await account.getActiveBonds();
-  const inactiveBonds = await account.getInactiveBonds();
-
-  var allBonds = [];
-  allBonds.push(activeBonds, inactiveBonds);
-
-  function isEmpty(val) {
-    let typeOfVal = typeof val;
-    switch (typeOfVal) {
-      case 'object':
-        return (val.length == 0) || !Object.keys(val).length;
-        break;
-      case 'string':
-        let str = val.trim();
-        return str == '' || str == undefined;
-        break;
-      case 'number':
-        return val == '';
-        break;
-      default:
-        return val == '' || val == undefined;
-    }
-  };
-
-  function findValue(args, obj) {
-    for (let [key_arg, value_arg] of Object.entries(args)) {
-      for (let [key, value] of Object.entries(obj)) {
-        if (key_arg == key && value_arg == value) {
-          return obj;
-        }
-      }
-    }
+  try {
+    const activeBonds = await account.getActiveBonds();
+    const inactiveBonds = await account.getInactiveBonds();
+    var allBonds = [];
+    allBonds.push(activeBonds, inactiveBonds);
+    if(isEmpty(allBonds)) {
+      throw new Error("Não foi possivel receber os vinculos")
+    }    
+  } catch (error) {
+    return res.json({error: true, message: error.message})
   }
-
-  function pushGrades(gradesGroups) {
+  
+  function pushGrades(gradesGroups: GradeGroup[]) {
     var gradeJSON = [];
     for (const gradesGroup of gradesGroups) {
       switch (gradesGroup.type) {
@@ -89,7 +70,7 @@ module.exports = async function (req, res) {
     return gradeJSON;
   }
 
-  function pushCourses(course, gradesJSON) {
+  function pushCourses(course: CourseStudent, gradesJSON:any) {
     return {
       id: course.id,
       title: course.title,
@@ -99,13 +80,13 @@ module.exports = async function (req, res) {
       grades: gradesJSON
     }
   }
-  async function gradesHandler(course) {
+  async function gradesHandler(course: CourseStudent) {
     const gradesGroups = await course.getGrades();
     const gradesJSON = pushGrades(gradesGroups);
     coursesJSON.push(pushCourses(course, gradesJSON))
   }
 
-  function pushBonds(bond) {
+  function pushBonds(bond: StudentBond, coursesJSON) {
     return {
       program: bond.program,
       registration: bond.registration,
@@ -115,7 +96,7 @@ module.exports = async function (req, res) {
   for (const bonds of allBonds) {
     for (let i = 0; i < bonds.length; i++) {
       coursesJSON = [];
-      const bond = bonds[i];
+      const bond:StudentBond = bonds[i];
       if (!isEmpty(args) && !findValue(args, bond)) break; // se tiver argumentos e não for valido
       else if (isEmpty(args)) { //verifica se existem argumentos
         res.json({
@@ -124,15 +105,15 @@ module.exports = async function (req, res) {
         })
         return;
       }
-      const courses = await bond.getCourses();
+      const courses:CourseStudent[] = await bond.getCourses();
       for (const course of courses) {
         if (findValue(args, course)) await gradesHandler(course);
       }
-      bondsJSON.push(pushBonds(bond))
+      bondsJSON.push(pushBonds(bond, coursesJSON))
     }
   }
-  res.json({
+  await account.logoff();
+  return res.json({
     bonds: bondsJSON
   });
-  await account.logoff();
 }
