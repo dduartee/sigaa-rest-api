@@ -13,14 +13,14 @@ export default async function (req: Request, res: Response) {
   const username = req.body.username;
   const password = req.body.password;
   const args = req.query;
-
   const account = await sigaa.login(username, password);
   try {
     const activeBonds = await account.getActiveBonds();
     const inactiveBonds = await account.getInactiveBonds();
     var allBonds = [];
     allBonds.push(activeBonds, inactiveBonds);
-    if (isEmpty(allBonds)) {
+    
+    if (isEmpty(allBonds[0])) {
       throw new Error("Não foi possivel receber os vinculos");
     }
   } catch (error) {

@@ -19,7 +19,7 @@ export default async function (req:Request, res:Response) {
         const inactiveBonds = await account.getInactiveBonds();
         var allBonds = [];
         allBonds.push(activeBonds, inactiveBonds);
-        if(isEmpty(allBonds)) {
+        if(isEmpty(allBonds[0])) {
           throw new Error("Não foi possivel receber os vinculos")
         }    
       } catch (error) {
