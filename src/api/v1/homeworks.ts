@@ -1,10 +1,4 @@
-import {
-  Sigaa,
-  CourseStudent,
-  StudentBond,
-  SigaaHomework,
-  Homework,
-} from "sigaa-api";
+import { Sigaa, CourseStudent, StudentBond, SigaaHomework } from "sigaa-api";
 import { Request, Response } from "express";
 import isEmpty from "../../util/isEmpty";
 import findValue from "../../util/findValue";

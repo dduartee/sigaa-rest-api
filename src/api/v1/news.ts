@@ -1,11 +1,4 @@
-import {
-  Sigaa,
-  CourseStudent,
-  MemberList,
-  SigaaNews,
-  News,
-  StudentBond,
-} from "sigaa-api";
+import { Sigaa, CourseStudent, News, StudentBond } from "sigaa-api";
 import { Request, Response } from "express";
 import isEmpty from "../../util/isEmpty";
 import findValue from "../../util/findValue";
