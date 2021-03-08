@@ -13,19 +13,6 @@ export default async function (req: Request, res: Response) {
   const username = req.body.username;
   const password = req.body.password;
   const args = req.query;
-  const account = await sigaa.login(username, password);
-  try {
-    const activeBonds = await account.getActiveBonds();
-    const inactiveBonds = await account.getInactiveBonds();
-    var allBonds = [];
-    allBonds.push(activeBonds, inactiveBonds);
-
-    if (isEmpty(allBonds[0])) {
-      throw new Error("Não foi possivel receber os vinculos");
-    }
-  } catch (error) {
-    return res.json({ error: true, message: error.message });
-  }
 
   function pushGrades(gradesGroups: GradeGroup[]) {
     var gradeJSON = [];
@@ -93,26 +80,38 @@ export default async function (req: Request, res: Response) {
       courses: coursesJSON,
     };
   }
-  for (const bonds of allBonds) {
-    for (let i = 0; i < bonds.length; i++) {
-      coursesJSON = [];
-      const bond: StudentBond = bonds[i];
-      const courses: CourseStudent[] = await bond.getCourses();
-      for (const course of courses) {
-        if (findValue(args, course)) await gradesHandler(course);
-        else if (isEmpty(args)) {
-          //verifica se existem argumentos
-          res.json({
-            error: true,
-            msg: "Rota requer argumentos",
-          });
+
+  try {
+    if (isEmpty(args)) {
+      //verifica se existem argumentos
+      throw new Error("Rota requer argumentos");
+    }
+    const account = await sigaa.login(username, password);
+    const activeBonds = await account.getActiveBonds();
+    const inactiveBonds = await account.getInactiveBonds();
+    var allBonds = [];
+    allBonds.push(activeBonds, inactiveBonds);
+
+    if (isEmpty(allBonds[0])) {
+      throw new Error("Não foi possivel receber os vinculos");
+    }
+
+    for (const bonds of allBonds) {
+      for (let i = 0; i < bonds.length; i++) {
+        coursesJSON = [];
+        const bond: StudentBond = bonds[i];
+        const courses: CourseStudent[] = await bond.getCourses();
+        for (const course of courses) {
+          if (findValue(args, course)) await gradesHandler(course);
+          bondsJSON.push(pushBonds(bond, coursesJSON));
         }
-        bondsJSON.push(pushBonds(bond, coursesJSON));
       }
     }
+    await account.logoff();
+    return res.json({
+      bonds: bondsJSON,
+    });
+  } catch (error) {
+    return res.json({ error: true, message: error.message });
   }
-  await account.logoff();
-  return res.json({
-    bonds: bondsJSON,
-  });
 }
