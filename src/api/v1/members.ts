@@ -1,4 +1,4 @@
-import { Sigaa, CourseStudent, MemberList, StudentBond } from "sigaa-api";
+import { Sigaa, CourseStudent, MemberList, StudentBond, Account } from 'sigaa-api';
 import { Request, Response } from "express";
 import isEmpty from "../../util/isEmpty";
 import findValue from "../../util/findValue";
@@ -46,20 +46,19 @@ export default async function (req: Request, res: Response) {
       courses: coursesJSON,
     };
   }
-
+  var account:Account;
   try {
     if (isEmpty(args)) {
       //verifica se existem argumentos
       throw new Error("Rota requer argumentos");
     }
-    const account = await sigaa.login(username, password);
+    var account = await sigaa.login(username, password);
     const activeBonds = await account.getActiveBonds();
     const inactiveBonds = await account.getInactiveBonds();
 
     var allBonds = [];
     allBonds.push(activeBonds, inactiveBonds);
     if (isEmpty(allBonds[0])) {
-      await account.logoff();
       throw new Error("Não foi possivel receber os vinculos");
     }
 
@@ -81,6 +80,8 @@ export default async function (req: Request, res: Response) {
       bonds: bondsJSON,
     });
   } catch (error) {
+    await account.logoff();
+
     return res.json({ error: true, message: error.message });
   }
 }
