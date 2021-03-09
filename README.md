@@ -1,6 +1,11 @@
 # sigaa-rest-api
-### Projeto esta em produção na HEROKU
+### Projeto esta em PRODUÇÃO na AWS (principal)
+http://18.231.111.243:3000/
+### Projeto esta em PRODUÇÃO na HEROKU
 https://sigaa-rest-api.herokuapp.com/
+
+### Projeto esta em STAGE na HEROKU
+https://sigaa-rest-api-stage.herokuapp.com/
 
 Forma de requisições em rotas:
 `
@@ -19,11 +24,11 @@ Sem argumentos
 /api/news/
 /api/homeworks/
 
-Com argumentos, informando pela url (informe argumentos sobre os courses[materias] e sobre os bonds[vinculos], como por exemplo: id e codigo da materia, registration[matricula] do vinculo)
+Com argumentos, informando pela url (informe argumentos sobre os courses[materias] como por exemplo: id e codigo da materia
 ```
-URL: https://sigaa-rest-api.herokuapp.com/api/news?id={id da materia}&registration={registration do vinculo}
+URL: https://sigaa-rest-api.herokuapp.com/api/news?id={id da materia}
 
-body {
+{
     "username": "usuario",
     "password": "senha"
 }

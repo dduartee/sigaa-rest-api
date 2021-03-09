@@ -1,13 +1,14 @@
 {
   "name": "sigaa-rest-api",
-  "version": "3.0.2",
+  "version": "3.0.9",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
     "build": "tsc",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "postinstall": "npm run build"
+    "postinstall": "npm run build",
+    "buildinstall": "npm run build && npm run start"
   },
   "repository": "git+https://github.com/dduartee/sigaa-rest-api.git",
   "keywords": [],
