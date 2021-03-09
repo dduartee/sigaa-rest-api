@@ -43,6 +43,9 @@ export default async function (req: Request, res: Response) {
       period: course.period,
       schedule: course.schedule,
       homeworks: homeworksJSON,
+      news: [],
+      grades: [],
+      members: []
     };
   }
   async function homeworkHandler(course: CourseStudent) {

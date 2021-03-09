@@ -22,6 +22,9 @@ export default async function (req: Request, res: Response) {
       period: course.period,
       schedule: course.schedule,
       news: newsJSON,
+      members: [],
+      grades: [],
+      homeworks: []
     };
   }
 

@@ -65,6 +65,9 @@ export default async function (req: Request, res: Response) {
       period: course.period,
       schedule: course.schedule,
       grades: gradesJSON,
+      homeworks: [],
+      news: [],
+      members: []
     };
   }
   async function gradesHandler(course: CourseStudent) {

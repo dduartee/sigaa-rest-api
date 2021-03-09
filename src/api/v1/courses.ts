@@ -19,6 +19,10 @@ export default async function (req: Request, res: Response) {
       code: course.code,
       period: course.period,
       schedule: course.schedule,
+      grades: [],
+      homeworks: [],
+      news: [],
+      members: []
     };
   }
 
