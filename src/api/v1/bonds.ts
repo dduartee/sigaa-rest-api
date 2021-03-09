@@ -31,6 +31,7 @@ export default async function (req: Request, res: Response) {
     var allBonds = [];
     allBonds.push(activeBonds, inactiveBonds);
     if (isEmpty(allBonds[0])) {
+      await account.logoff();
       throw new Error("Não foi possivel receber os vinculos");
     }
 
