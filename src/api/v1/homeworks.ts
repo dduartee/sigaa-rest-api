@@ -43,6 +43,9 @@ export default async function (req: Request, res: Response) {
       period: course.period,
       schedule: course.schedule,
       homeworks: homeworksJSON,
+      news: [],
+      grades: [],
+      members: []
     };
   }
   async function homeworkHandler(course: CourseStudent) {
@@ -60,10 +63,6 @@ export default async function (req: Request, res: Response) {
   }
   var account:Account;
   try {
-    if (isEmpty(args)) {
-      //verifica se existem argumentos
-      throw new Error("Rota requer argumentos");
-    }
     var account = await sigaa.login(username, password);
     const activeBonds = await account.getActiveBonds();
     const inactiveBonds = await account.getInactiveBonds();
@@ -80,7 +79,10 @@ export default async function (req: Request, res: Response) {
         const bond: StudentBond = bonds[i];
         const courses = await bond.getCourses();
         for (const course of courses) {
-          if (findValue(args, course)) await homeworkHandler(course);
+          if (findValue(args, course) && !isEmpty(args)) await homeworkHandler(course);
+          else if (isEmpty(args)) {
+            await homeworkHandler(course)
+          }
         }
         bondsJSON.push(pushBonds(bond));
       }

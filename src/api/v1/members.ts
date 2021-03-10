@@ -24,6 +24,9 @@ export default async function (req: Request, res: Response) {
       period: course.period,
       schedule: course.schedule,
       members: membersJSON,
+      grades: [],
+      news: [],
+      homeworks: []
     };
   }
 
