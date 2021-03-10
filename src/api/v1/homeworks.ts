@@ -54,13 +54,13 @@ export default async function (req: Request, res: Response) {
       const homeworksJSON = await pushHomeworks(homeworkList);
       coursesJSON.push(pushCourses(course, homeworksJSON));
     } catch (err) { //em caso de erro a requisição não sera cancelada
-      const homeworksJSON = {
+      const homeworksJSON = [{
         title: err.name,
         description: err.message,
         startDate: '',
         endDate: '',
         haveGrade: ''
-      }
+      }]
       coursesJSON.push(pushCourses(course, homeworksJSON));
     }
   }
