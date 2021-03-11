@@ -73,8 +73,6 @@ export default async function (req: Request, res: Response) {
   async function gradesHandler(course: CourseStudent) {
     const gradesGroups = await course.getGrades();
     const gradesJSON = pushGrades(gradesGroups);
-    console.log(gradesJSON);
-    
     coursesJSON.push(pushCourses(course, gradesJSON));
   }
 
