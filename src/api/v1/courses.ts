@@ -67,7 +67,7 @@ export default async function (req: Request, res: Response) {
       bonds: bondsJSON,
     });
   } catch (error) {
-    await account.logoff();
+    if(account) await account.logoff();
     return res.json({ error: true, message: error.message });
   }
 }
