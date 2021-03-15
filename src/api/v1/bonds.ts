@@ -44,10 +44,15 @@ export default async function (req: Request, res: Response) {
     }
     await account.logoff();
     return res.json({
+      info: {
+        error: false,
+        message: "",
+        date: new Date(Date.now()).toISOString()
+      },
       bonds: bondsJSON,
     });
   } catch (error) {
     if(account) await account.logoff();
-    return res.json({ error: true, message: error.message });
+    return res.json({ info: {error: true, message: error.message, date: new Date(Date.now()).toISOString()} });
   }
 }
