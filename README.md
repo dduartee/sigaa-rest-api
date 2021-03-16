@@ -2,8 +2,6 @@
 ### Projeto esta em PRODUÇÃO na AWS
 http://18.231.111.243:3000/
 
-### Projeto esta em STAGE na AWS
-http://18.231.111.243:3003/
 
 Forma de requisições em rotas:
 `
