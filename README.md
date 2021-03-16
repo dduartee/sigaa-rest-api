@@ -34,3 +34,6 @@ URL: https://sigaa-rest-api.herokuapp.com/api/news?id={id da materia}
 }
 ```
 
+Fiz uma demonstração ([_sigaa-rest-api-demo_][sigaa-rest-api-demo]) do uso da api com um sistema simples de cache usando o localstorage.
+
+[sigaa-rest-api-demo]: https://github.com/dduartee/sigaa-rest-api-demo
