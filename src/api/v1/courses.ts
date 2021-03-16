@@ -63,7 +63,6 @@ export default async function (req: Request, res: Response) {
       }
     }
     await account.logoff();
-    console.log(new Date(Date.now()).toISOString());
     
     return res.json({
       info: {
