@@ -1,6 +1,6 @@
 {
   "name": "sigaa-rest-api",
-  "version": "3.0.14",
+  "version": "4.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -21,6 +21,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "path": "^0.12.7",
     "sigaa-api": "^1.0.20"
   },
   "devDependencies": {

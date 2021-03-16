@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sigaa-rest-api-demo</title>
+</head>
+
+<body>
+    <form>
+        <label>Username: <input type="text" name="username" id="username"></label>
+        <label>Password: <input type="password" name="password" id="password"></label>
+        <input type="button" value="Logar" onclick="handler()">
+        <input type="button" value="Mostrar Cache" onclick="showCache()">
+        <input type="button" value="Remover Cache" onclick="removeCache()">
+    </form>
+    <div id="list"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script>
+        class SigaaRestAPI {
+            baseURL = "";
+            payload = {};
+            constructor({
+                baseURL,
+                payload
+            }) {
+                this.baseURL = baseURL;
+                this.payload = payload;
+            }
+            async getBonds() {
+                const {
+                    data
+                } = await axios.post(`${this.baseURL}/api/bonds`, this.payload)
+                return data;
+            }
+            async getCourses(filter = "") {
+                const {
+                    data
+                } = await axios.post(`${this.baseURL}/api/courses?${filter}`, this.payload)
+                return data;
+            }
+            async getHomeworks(filter = "") {
+                const {
+                    data
+                } = await axios.post(`${this.baseURL}/api/homeworks?${filter}`, this.payload)
+                return data
+            }
+        }
+    </script>
+    <script src="https://momentjs.com/downloads/moment.js"></script>
+    <script>
+        class Cache {
+            key;
+            constructor(key) {
+                this.key = key;
+            }
+            setCache(value) {
+                return localStorage.setItem(this.key, value)
+            }
+            getCache() {
+                return localStorage.getItem(this.key)
+            }
+            removeCache() {
+                return localStorage.removeItem(this.key)
+            }
+        }
+    </script>
+    <script>
+        async function handler() {
+            if (document.getElementById("username").value == "" || document.getElementById("password").value ==
+                "") {
+                return console.log("Campos em branco")
+            }
+            const Sigaa = new SigaaRestAPI({
+                baseURL: "http://18.231.111.243:3000",
+                //baseURL: "http://localhost:3000",
+                payload: {
+                    "username": document.getElementById("username").value,
+                    "password": document.getElementById("password").value
+                }
+            });
+            try {
+                const sigaacache = new Cache('sigaa-cache');
+                if (!sigaacache.getCache()) { //se não tiver o cache
+                    document.getElementById("list").innerHTML = "Aguarde por favor..."
+                    console.log("criando cache")
+                    sigaacache.setCache(JSON.stringify(await Sigaa.getCourses()))
+                    console.log("cache criado")
+                } else if ((JSON.parse(sigaacache.getCache())).info.error) { //verifica se o cache tem erro
+                    console.log("contem erro no cache")
+                    sigaacache.removeCache(); //remove o cache
+                    console.log("cache removido")
+                    throw new Error((JSON.parse(sigaacache.getCache())).info.message) //retorna erro
+                }
+                const sigaacacheJSON = (JSON.parse(sigaacache.getCache()))
+                var datecache = moment(sigaacacheJSON.info.date);
+                var datenow = moment(new Date().toISOString());
+                var diffdatecache = datenow.diff(datecache, 'hours')
+                if (diffdatecache >= 4) { //se o cache antigo por maior que 4 horas
+                    document.getElementById("list").innerHTML = "Atualizando cache"
+                    console.log(diffdatecache);
+                    console.log("atualizando cache...")
+                    localStorage.setItem('sigaa-cache', JSON.stringify(await Sigaa.getCourses()))
+                    console.log("cache atualizado")
+                    var datecache = moment(sigaacacheJSON.info.date);
+                    var datenow = moment(new Date().toISOString());
+                    var diffdatecache = datenow.diff(datecache, 'hours')
+                } else {
+                    console.log("cache existente")
+                }
+                var output = '';
+                output += `<h4>Mostrando cache de ${datenow.diff(datecache, 'minutes')} minutos atrás</h4>`
+                sigaacacheJSON.bonds.map(bond => {
+                    output += `<li>${bond.program}`
+                    bond.courses.map(course => {
+                        output += `<ul>${course.title}`
+                        output += `</ul>`
+                    })
+                    output += `</li>`
+                })
+                document.getElementById("list").innerHTML = output
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    </script>
+    <script>
+        function removeCache() {
+            const sigaacache = new Cache('sigaa-cache')
+            sigaacache.removeCache();
+            document.getElementById("list").innerHTML = "cache removido"
+        }
+
+        function showCache() {
+            const sigaacache = new Cache('sigaa-cache')
+            const sigaacacheJSON = (JSON.parse(sigaacache.getCache()))
+            if (!sigaacacheJSON) throw new Error("SIGAA: Cache nao criado")
+            var datecache = moment(sigaacacheJSON.info.date);
+            var datenow = moment(new Date().toISOString());
+            var diffdatecache = datenow.diff(datecache, 'hours')
+            var output = '';
+            output += `<h4>Mostrando cache de ${datenow.diff(datecache, 'minutes')} minutos atrás</h4>`
+            sigaacacheJSON.bonds.map(bond => {
+                output += `<li>${bond.program}`
+                bond.courses.map(course => {
+                    output += `<ul>${course.title}`
+                    output += `</ul>`
+                })
+                output += `</li>`
+            })
+            document.getElementById("list").innerHTML = output
+        }
+    </script>
+</body>
+
+</html>
