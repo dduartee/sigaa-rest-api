@@ -49,9 +49,20 @@ export default async function (req: Request, res: Response) {
     };
   }
   async function homeworkHandler(course: CourseStudent) {
-    const homeworkList: any[] = await course.getHomeworks();
-    const homeworksJSON = await pushHomeworks(homeworkList);
-    coursesJSON.push(pushCourses(course, homeworksJSON));
+    try {
+      const homeworkList: any[] = await course.getHomeworks();
+      const homeworksJSON = await pushHomeworks(homeworkList);
+      coursesJSON.push(pushCourses(course, homeworksJSON));
+    } catch (err) { //em caso de erro a requisição não sera cancelada
+      const homeworksJSON = [{
+        title: err.name,
+        description: err.message,
+        startDate: '',
+        endDate: '',
+        haveGrade: ''
+      }]
+      coursesJSON.push(pushCourses(course, homeworksJSON));
+    }
   }
 
   function pushBonds(bond: StudentBond) {
@@ -89,10 +100,15 @@ export default async function (req: Request, res: Response) {
     }
     await account.logoff();
     return res.json({
+      info: {
+        error: false,
+        message: "",
+        date: new Date(Date.now()).toISOString()
+      },
       bonds: bondsJSON,
     });
   } catch (error) {
-    await account.logoff();
-    return res.json({ error: true, message: error.message });
+    if(account) await account.logoff();
+    return res.json({ info: {error: true, message: error.message, date: new Date(Date.now()).toISOString()} });
   }
 }
