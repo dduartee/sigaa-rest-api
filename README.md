@@ -1,11 +1,9 @@
 # sigaa-rest-api
-### Projeto esta em PRODUÇÃO na AWS (principal)
+### Projeto esta em PRODUÇÃO na AWS
 http://18.231.111.243:3000/
-### Projeto esta em PRODUÇÃO na HEROKU
-https://sigaa-rest-api.herokuapp.com/
 
-### Projeto esta em STAGE na HEROKU
-https://sigaa-rest-api-stage.herokuapp.com/
+### Projeto esta em STAGE na AWS
+http://18.231.111.243:3003/
 
 Forma de requisições em rotas:
 `
